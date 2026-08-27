@@ -1,0 +1,22 @@
+{
+  "name": "Renault Megane IV Dikey Akıllı Kokpit & Multimedya",
+  "short_name": "Megane Dikey",
+  "description": "Renault Megane 4 2022 Dikey (Portrait) Android Multimedya Ekranı için Dijital Gösterge ve Ekran Koruyucu",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#06090e",
+  "theme_color": "#0a0e17",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
