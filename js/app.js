@@ -1,15 +1,19 @@
 /**
- * Megane IV Android Tablet Multimedya & GPS Controller
- * 100% OBD-Free: Pure GPS Speedometer, Trip Computer, Weather & News
+ * Megane IV Android Tablet Cockpit Coordinator
+ * 5-Page Dedicated Architecture:
+ * 1. Ana Ekran (Kokpit Ambiyans & Sürücü Plaka Rozeti)
+ * 2. Büyük Klasik Saat (Chronograph Dial & Canlı Tarih)
+ * 3. Büyük Hız Göstergesi (GPS Hız, Maksimum & Ortalama Hız, Mesafe, Pusula)
+ * 4. Canlı Hava Durumu (Şehir/İlçe, 4 Metrik Barı & 4 Günlük Geniş Tahmin)
+ * 5. Canlı Haberler & 𝕏 TT (Haberler.com, OdaTV, Tele1, X.com TR Trendleri)
  */
 
 class MeganeApp {
     constructor() {
         this.gauge = null;
         this.classicClock = null;
-        this.idleTimeoutMs = 15000; // 15 seconds default
-        this.lastUserActivity = Date.now();
-        this.isScreensaverActive = true;
+        this.currentPage = 0;
+        this.totalPages = 5;
 
         // GPS Telemetry State (OBD Bağımsız)
         this.speed = 0;
@@ -20,13 +24,10 @@ class MeganeApp {
         this.lastGpsCoords = null;
         this.gpsWatchId = null;
 
-        // Simulation State
-        this.simSpeedInterval = null;
-        this.isAccelerating = false;
-        this.isBraking = false;
+        // Touch Swipe
+        this.touchStartX = 0;
+        this.touchStartY = 0;
 
-        // Turn signals
-        this.activeSignal = null;
         this.currentMode = 'sport';
     }
 
@@ -36,160 +37,263 @@ class MeganeApp {
         this.gauge = new MeganeGauge('speedoCanvas');
         this.setDriveMode('sport');
 
-        // 2. Initialize Sub-services
-        if (window.weatherService) window.weatherService.init();
-        if (window.newsService) window.newsService.init();
-        if (window.mediaService) window.mediaService.init();
-
-        // 3. Setup Clock & Date
+        // 2. Start Clocks & Pagination
         this.startClock();
+        this.setupPagination();
 
-        // 4. Setup Activity Tracking (Touch, Mouse, Key)
-        this.setupActivityTracking();
-
-        // 5. Setup UI Events
-        this.setupEventHandlers();
-
-        // 6. Start Inactivity & Countdown Loop
-        this.startIdleChecker();
-
-        // 7. Start GPS Live Geolocation
+        // 3. Start Geolocation (Passive GPS / Speedometer)
         this.startGpsTracking();
 
-        // 8. Screensaver Ambient Particles
+        // 4. Initialize Child Services
+        if (window.weatherService) window.weatherService.init();
+        if (window.financeService) window.financeService.init();
+
+        // 5. Setup Event Listeners & Particles
+        this.setupEventHandlers();
         this.createAmbientParticles();
 
-        console.log('Renault Megane IV GPS Smart Tablet App Ready.');
+        // Initial setup for page 0
+        this.goToPage(0, false);
     }
 
     /* -------------------------------------------------------------
-       CLOCK & DATE
+       5-PAGE NAVIGATION & SWIPE CONTROLLER
+       ------------------------------------------------------------- */
+    setupPagination() {
+        const track = document.getElementById('pagesTrack');
+        const container = document.getElementById('pagesDeckContainer') || document.body;
+        const btnPrev = document.getElementById('btnPrevPage');
+        const btnNext = document.getElementById('btnNextPage');
+        const pills = document.querySelectorAll('.page-pill');
+
+        if (btnPrev) {
+            btnPrev.addEventListener('click', () => this.prevPage());
+        }
+
+        if (btnNext) {
+            btnNext.addEventListener('click', () => this.nextPage());
+        }
+
+        pills.forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                const targetPage = parseInt(e.currentTarget.dataset.page, 10);
+                this.goToPage(targetPage);
+            });
+        });
+
+        // High-Performance Finger Swipe & Drag Engine
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
+        let isHorizontalSwipe = false;
+
+        const handleStart = (clientX, clientY, target) => {
+            if (target && (target.closest('button') || target.closest('select') || target.closest('.news-source-tab'))) {
+                return;
+            }
+            startX = clientX;
+            startY = clientY;
+            isDragging = true;
+            isHorizontalSwipe = false;
+        };
+
+        const handleMove = (clientX, clientY) => {
+            if (!isDragging) return;
+            const diffX = clientX - startX;
+            const diffY = clientY - startY;
+
+            if (!isHorizontalSwipe) {
+                if (Math.abs(diffX) > 12 && Math.abs(diffX) > Math.abs(diffY)) {
+                    isHorizontalSwipe = true;
+                }
+            }
+
+            if (isHorizontalSwipe && track) {
+                const containerWidth = container.offsetWidth || window.innerWidth;
+                const baseOffset = -this.currentPage * 100;
+                const dragOffsetPercent = (diffX / containerWidth) * 100;
+                let finalPercent = baseOffset + dragOffsetPercent;
+
+                if (this.currentPage === 0 && diffX > 0) {
+                    finalPercent = (diffX / containerWidth) * 25;
+                } else if (this.currentPage === this.totalPages - 1 && diffX < 0) {
+                    finalPercent = baseOffset + (diffX / containerWidth) * 25;
+                }
+                track.style.transition = 'none';
+                track.style.transform = `translateX(${finalPercent}%)`;
+            }
+        };
+
+        const handleEnd = (clientX) => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            if (track) {
+                track.style.transition = 'transform 0.38s cubic-bezier(0.2, 1, 0.3, 1)';
+            }
+
+            if (isHorizontalSwipe) {
+                const diffX = clientX - startX;
+                const threshold = 35; // 35px responsive flick threshold
+
+                if (diffX < -threshold) {
+                    this.nextPage();
+                } else if (diffX > threshold) {
+                    this.prevPage();
+                } else {
+                    this.goToPage(this.currentPage, false);
+                }
+            } else {
+                this.goToPage(this.currentPage, false);
+            }
+            isHorizontalSwipe = false;
+        };
+
+        // Touch events for mobile/tablet screen
+        container.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            handleStart(touch.clientX, touch.clientY, e.target);
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                const touch = e.touches[0];
+                handleMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches[0];
+            handleEnd(touch.clientX);
+        }, { passive: true });
+
+        container.addEventListener('touchcancel', (e) => {
+            if (isDragging) {
+                const touch = e.changedTouches[0];
+                handleEnd(touch.clientX);
+            }
+        }, { passive: true });
+
+        // Mouse drag support
+        container.addEventListener('mousedown', (e) => {
+            handleStart(e.clientX, e.clientY, e.target);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                handleMove(e.clientX, e.clientY);
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                handleEnd(e.clientX);
+            }
+        });
+
+        // Keyboard Arrow Navigation
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') this.nextPage();
+            if (e.key === 'ArrowLeft') this.prevPage();
+        });
+    }
+
+    goToPage(pageIndex, playSound = true) {
+        if (pageIndex < 0) pageIndex = 0;
+        if (pageIndex >= this.totalPages) pageIndex = this.totalPages - 1;
+
+        this.currentPage = pageIndex;
+
+        const track = document.getElementById('pagesTrack');
+        if (track) {
+            track.style.transition = 'transform 0.38s cubic-bezier(0.2, 1, 0.3, 1)';
+            track.style.transform = `translateX(-${pageIndex * 100}%)`;
+        }
+
+        // Update Active Page Class
+        document.querySelectorAll('.page-view').forEach((page, idx) => {
+            if (idx === pageIndex) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
+
+        // Update Nav Pills
+        document.querySelectorAll('.page-pill').forEach((pill, idx) => {
+            if (idx === pageIndex) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
+
+        if (playSound && window.soundSystem) {
+            window.soundSystem.playClick();
+        }
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages - 1) {
+            this.goToPage(this.currentPage + 1);
+        } else {
+            this.goToPage(0); // Wrap around to page 0
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 0) {
+            this.goToPage(this.currentPage - 1);
+        } else {
+            this.goToPage(this.totalPages - 1); // Wrap around to page 4
+        }
+    }
+
+    /* -------------------------------------------------------------
+       CLOCK ENGINE & TIME UPDATES
        ------------------------------------------------------------- */
     startClock() {
         const update = () => {
             const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            const timeStr = `${h}:${m}`;
-            const timeWithSec = `${h}:${m}:${s}`;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const timeStr = `${hours}:${minutes}`;
+            const timeWithSec = `${hours}:${minutes}:${seconds}`;
 
             const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-            const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-            
+            const months = [
+                'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+                'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+            ];
+
             const dayName = days[now.getDay()];
             const monthName = months[now.getMonth()];
             const dateNum = now.getDate();
             const year = now.getFullYear();
 
-            const fullDateStr = `${dateNum} ${monthName} ${year}, ${dayName}`;
-
-            // Ambient Clock
+            // Page 1 Ambient Clock
             const ambTime = document.getElementById('ambientTime');
             const ambDate = document.getElementById('ambientDate');
             const ambSecFill = document.getElementById('ambientSecFill');
 
             if (ambTime) ambTime.textContent = timeStr;
-            if (ambDate) ambDate.textContent = fullDateStr;
+            if (ambDate) ambDate.innerHTML = `${dateNum} ${monthName} ${year}, <span class="clock-day-highlight">${dayName}</span>`;
             if (ambSecFill) {
                 const secPct = (now.getSeconds() / 60) * 100;
                 ambSecFill.style.width = `${secPct}%`;
             }
 
-            // Dashboard Top Clock & Analog Subtitle Sync
-            const dashTime = document.getElementById('dashTime');
-            if (dashTime) dashTime.textContent = timeWithSec;
-
+            // Subtitle Clock Sync on Page 2
             const dashDigTime = document.getElementById('dashDigitalTime');
             const dashDigDate = document.getElementById('dashDigitalDate');
             if (dashDigTime) dashDigTime.textContent = timeWithSec;
-            if (dashDigDate) dashDigDate.innerHTML = `${dateNum} ${monthName.substring(0, 3)} <span class="clock-day-highlight">${dayName}</span>`;
+            if (dashDigDate) dashDigDate.innerHTML = `${dateNum} ${monthName} ${year}, <span class="clock-day-highlight">${dayName}</span>`;
         };
 
         update();
         setInterval(update, 1000);
-    }
-
-    /* -------------------------------------------------------------
-       TOUCH & INACTIVITY (SCREENSAVER TRANSITION)
-       ------------------------------------------------------------- */
-    setupActivityTracking() {
-        const events = ['touchstart', 'touchend', 'mousedown', 'mousemove', 'keydown', 'click'];
-        
-        events.forEach(evt => {
-            document.addEventListener(evt, () => {
-                this.onUserActivity();
-            }, { passive: true });
-        });
-
-        // Screensaver Click/Touch to Wake
-        const screensaver = document.getElementById('screensaver');
-        if (screensaver) {
-            screensaver.addEventListener('click', () => {
-                this.wakeDashboard();
-            });
-            screensaver.addEventListener('touchstart', () => {
-                this.wakeDashboard();
-            }, { passive: true });
-        }
-    }
-
-    onUserActivity() {
-        this.lastUserActivity = Date.now();
-    }
-
-    startIdleChecker() {
-        const badge = document.getElementById('idleCountdownBadge');
-
-        setInterval(() => {
-            if (this.idleTimeoutMs === 0) {
-                if (badge) badge.textContent = 'Açık';
-                return;
-            }
-
-            const elapsed = Date.now() - this.lastUserActivity;
-            const remainingSec = Math.max(0, Math.ceil((this.idleTimeoutMs - elapsed) / 1000));
-
-            if (badge) {
-                badge.textContent = `${remainingSec}s`;
-            }
-
-            if (!this.isScreensaverActive && elapsed >= this.idleTimeoutMs) {
-                this.activateScreensaver();
-            }
-        }, 500);
-    }
-
-    wakeDashboard() {
-        if (!this.isScreensaverActive) return;
-        this.isScreensaverActive = false;
-        this.lastUserActivity = Date.now();
-
-        const screensaver = document.getElementById('screensaver');
-        const dashboard = document.getElementById('dashboard');
-
-        if (window.soundSystem) window.soundSystem.playWake();
-
-        if (screensaver) screensaver.classList.remove('active');
-        if (dashboard) dashboard.classList.add('active');
-
-        setTimeout(() => {
-            if (this.gauge) this.gauge.setupDPI();
-            if (this.classicClock) this.classicClock.setupDPI();
-        }, 200);
-    }
-
-    activateScreensaver() {
-        if (this.isScreensaverActive) return;
-        this.isScreensaverActive = true;
-
-        const screensaver = document.getElementById('screensaver');
-        const dashboard = document.getElementById('dashboard');
-
-        if (screensaver) screensaver.classList.add('active');
-        if (dashboard) dashboard.classList.remove('active');
-
-        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
     }
 
     /* -------------------------------------------------------------
@@ -203,10 +307,9 @@ class MeganeApp {
 
         const modeMap = {
             sport: { class: 'theme-sport', color: '#ff2a44', sec: '#ff7700', label: 'SPORT' },
-            comfort: { class: 'theme-comfort', color: '#00b4d8', sec: '#48cae4', label: 'COMFORT' },
-            eco: { class: 'theme-eco', color: '#10b981', sec: '#34d399', label: 'ECO' },
-            mysense: { class: 'theme-mysense', color: '#a855f7', sec: '#ec4899', label: 'MYSENSE' },
-            gold: { class: 'theme-gold', color: '#f59e0b', sec: '#fbbf24', label: 'PERSO' }
+            comfort: { class: 'theme-comfort', color: '#38bdf8', sec: '#2563eb', label: 'COMFORT' },
+            eco: { class: 'theme-eco', color: '#10b981', sec: '#059669', label: 'ECO' },
+            mysense: { class: 'theme-mysense', color: '#a855f7', sec: '#7c3aed', label: 'MYSENSE' }
         };
 
         const config = modeMap[mode] || modeMap.sport;
@@ -219,11 +322,6 @@ class MeganeApp {
             this.classicClock.setThemeColors(config.color, config.sec);
         }
 
-        const ambMode = document.getElementById('ambientModeLabel');
-        if (ambMode) {
-            ambMode.innerHTML = `<i class="fa-solid fa-palette"></i><span>${config.label}</span>`;
-        }
-
         document.querySelectorAll('.mode-btn').forEach(btn => {
             if (btn.dataset.mode === mode) {
                 btn.classList.add('active');
@@ -234,20 +332,16 @@ class MeganeApp {
     }
 
     /* -------------------------------------------------------------
-       GPS LIVE TRACKING (PURE SATELLITE SPEEDOMETER)
+       GPS LIVE TRACKING (SPEEDOMETER, MAX & AVG SPEED, HEADING)
        ------------------------------------------------------------- */
     startGpsTracking() {
         if (!navigator.geolocation) {
-            console.log('Geolocation not supported, simulation available.');
+            console.log('Geolocation not supported.');
             return;
         }
 
         this.gpsWatchId = navigator.geolocation.watchPosition(
             (pos) => {
-                const ambGps = document.getElementById('ambientGpsStatus');
-                if (ambGps) ambGps.textContent = 'GPS Bağlı';
-
-                // Pass to WeatherService silently to avoid duplicate permissions
                 if (window.weatherService && window.weatherService.updateCoordsFromGps) {
                     window.weatherService.updateCoordsFromGps(pos.coords.latitude, pos.coords.longitude);
                 }
@@ -269,7 +363,7 @@ class MeganeApp {
                         this.lastGpsCoords.latitude, this.lastGpsCoords.longitude,
                         pos.coords.latitude, pos.coords.longitude
                     );
-                    if (d > 0.005) { // more than 5 meters
+                    if (d > 0.005) {
                         this.tripKm += d;
                         const tripEl = document.getElementById('tripDist');
                         if (tripEl) tripEl.textContent = this.tripKm.toFixed(1);
@@ -278,16 +372,14 @@ class MeganeApp {
                 this.lastGpsCoords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
             },
             (err) => {
-                // Silently handle error, never spam user
-                const ambGps = document.getElementById('ambientGpsStatus');
-                if (ambGps) ambGps.textContent = 'GPS Hazır';
+                // Passive GPS listener
             },
             { enableHighAccuracy: true, maximumAge: 3000, timeout: 6000 }
         );
     }
 
     calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Earth radius in km
+        const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -297,100 +389,47 @@ class MeganeApp {
         return R * c;
     }
 
-    updateHeading(deg) {
-        const directions = ['KUZEY', 'KD', 'DOĞU', 'GD', 'GÜNEY', 'GB', 'BATI', 'KB'];
-        const idx = Math.round(deg / 45) % 8;
-        this.currentHeading = directions[idx];
-        const headingEl = document.getElementById('headingVal');
-        if (headingEl) headingEl.textContent = this.currentHeading;
-    }
+    updateSpeed(targetSpeed) {
+        this.speed = Math.max(0, Math.min(240, targetSpeed));
+        
+        if (this.speed > 0) {
+            this.speedSamples.push(this.speed);
+            if (this.speedSamples.length > 200) this.speedSamples.shift();
+        }
 
-    updateSpeed(newSpeed) {
-        this.speed = Math.round(Math.max(0, Math.min(newSpeed, 240)));
+        if (this.speed > this.maxSpeed) {
+            this.maxSpeed = this.speed;
+        }
+
+        const avgSpeed = this.speedSamples.length > 0 
+            ? Math.round(this.speedSamples.reduce((a, b) => a + b, 0) / this.speedSamples.length)
+            : 0;
 
         if (this.gauge) {
             this.gauge.setSpeed(this.speed);
         }
 
-        const speedDisplay = document.getElementById('speedDisplay');
-        if (speedDisplay) speedDisplay.textContent = this.speed;
+        const displayEl = document.getElementById('speedDisplay');
+        if (displayEl) displayEl.textContent = this.speed;
 
-        // Max Speed & Avg Speed calculation
-        if (this.speed > this.maxSpeed) {
-            this.maxSpeed = this.speed;
-            const maxEl = document.getElementById('maxSpeedVal');
-            if (maxEl) maxEl.textContent = this.maxSpeed;
-        }
+        const maxSpeedEl = document.getElementById('maxSpeedVal');
+        if (maxSpeedEl) maxSpeedEl.textContent = this.maxSpeed;
 
-        if (this.speed > 0) {
-            this.speedSamples.push(this.speed);
-            if (this.speedSamples.length > 50) this.speedSamples.shift();
-            const sum = this.speedSamples.reduce((a, b) => a + b, 0);
-            const avg = Math.round(sum / this.speedSamples.length);
-            const avgEl = document.getElementById('avgSpeedVal');
-            if (avgEl) avgEl.textContent = avg;
+        const avgSpeedEl = document.getElementById('avgSpeedVal');
+        if (avgSpeedEl) avgSpeedEl.textContent = avgSpeed;
+    }
 
-            // Accumulated trip distance simulation if GPS delta is idle
-            this.tripKm = +(this.tripKm + (this.speed / 3600)).toFixed(1);
-            const tripEl = document.getElementById('tripDist');
-            if (tripEl) tripEl.textContent = this.tripKm;
-        }
+    updateHeading(deg) {
+        const directions = ['KUZEY', 'KUZEYDOĞU', 'DOĞU', 'GÜNEYDOĞU', 'GÜNEY', 'GÜNEYBATI', 'BATI', 'KUZEYBATI'];
+        const index = Math.round(((deg %= 360) < 0 ? deg + 360 : deg) / 45) % 8;
+        this.currentHeading = directions[index];
+
+        const headingEl = document.getElementById('headingVal');
+        if (headingEl) headingEl.textContent = this.currentHeading;
     }
 
     /* -------------------------------------------------------------
-       SIMULATION ACCELERATE & BRAKE (TEST DRIVE CONTROLS)
-       ------------------------------------------------------------- */
-    startAcceleration() {
-        this.isAccelerating = true;
-        this.isBraking = false;
-        clearInterval(this.simSpeedInterval);
-        this.simSpeedInterval = setInterval(() => {
-            if (this.isAccelerating) {
-                this.updateSpeed(this.speed + 3.0);
-            }
-        }, 100);
-    }
-
-    stopAcceleration() {
-        this.isAccelerating = false;
-        clearInterval(this.simSpeedInterval);
-        this.startNaturalDecel();
-    }
-
-    startBraking() {
-        this.isBraking = true;
-        this.isAccelerating = false;
-        clearInterval(this.simSpeedInterval);
-        this.simSpeedInterval = setInterval(() => {
-            if (this.isBraking && this.speed > 0) {
-                this.updateSpeed(this.speed - 6);
-            } else if (this.speed <= 0) {
-                this.stopBraking();
-            }
-        }, 80);
-    }
-
-    stopBraking() {
-        this.isBraking = false;
-        clearInterval(this.simSpeedInterval);
-        if (this.speed > 0) {
-            this.startNaturalDecel();
-        }
-    }
-
-    startNaturalDecel() {
-        clearInterval(this.simSpeedInterval);
-        this.simSpeedInterval = setInterval(() => {
-            if (!this.isAccelerating && !this.isBraking && this.speed > 0) {
-                this.updateSpeed(this.speed - 0.8);
-            } else if (this.speed <= 0) {
-                clearInterval(this.simSpeedInterval);
-            }
-        }, 100);
-    }
-
-    /* -------------------------------------------------------------
-       EVENT HANDLERS & MODALS
+       EVENT HANDLERS
        ------------------------------------------------------------- */
     setupEventHandlers() {
         // Drive mode buttons
@@ -410,61 +449,6 @@ class MeganeApp {
                     window.weatherService.fetchWeatherByCityKey(e.target.value);
                 }
                 if (window.soundSystem) window.soundSystem.playClick();
-            });
-        }
-
-        // Quick Sleep / Screensaver Button in Topbar
-        const btnSleepNow = document.getElementById('btnSleepNow');
-        if (btnSleepNow) {
-            btnSleepNow.addEventListener('click', () => {
-                this.activateScreensaver();
-                if (window.soundSystem) window.soundSystem.playClick();
-            });
-        }
-
-        // Settings Modal
-        const btnSettings = document.getElementById('btnSettings');
-        const settingsModal = document.getElementById('settingsModal');
-        const btnCloseSettings = document.getElementById('btnCloseSettings');
-        const btnSaveSettings = document.getElementById('btnSaveSettings');
-
-        if (btnSettings && settingsModal) {
-            btnSettings.addEventListener('click', () => {
-                settingsModal.classList.add('active');
-                if (window.soundSystem) window.soundSystem.playClick();
-            });
-        }
-
-        if (btnCloseSettings && settingsModal) {
-            btnCloseSettings.addEventListener('click', () => {
-                settingsModal.classList.remove('active');
-            });
-        }
-
-        // Timeout Large Touch Tiles
-        document.querySelectorAll('.timeout-tile').forEach(tile => {
-            tile.addEventListener('click', (e) => {
-                document.querySelectorAll('.timeout-tile').forEach(t => t.classList.remove('active'));
-                tile.classList.add('active');
-                this.idleTimeoutMs = parseInt(tile.dataset.val, 10);
-                if (window.soundSystem) window.soundSystem.playClick();
-            });
-        });
-
-        if (btnSaveSettings && settingsModal) {
-            btnSaveSettings.addEventListener('click', () => {
-                settingsModal.classList.remove('active');
-                if (window.soundSystem) window.soundSystem.playClick();
-            });
-        }
-
-        // Sound Toggle in Settings
-        const soundToggle = document.getElementById('soundToggle');
-        if (soundToggle) {
-            soundToggle.addEventListener('change', (e) => {
-                if (window.soundSystem) {
-                    window.soundSystem.enabled = e.target.checked;
-                }
             });
         }
     }
@@ -494,8 +478,8 @@ class MeganeApp {
     }
 }
 
-// Start on DOM load
+// Global App Initialization
 window.addEventListener('DOMContentLoaded', () => {
-    window.app = new MeganeApp();
-    window.app.init();
+    window.meganeApp = new MeganeApp();
+    window.meganeApp.init();
 });

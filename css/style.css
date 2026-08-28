@@ -1,5 +1,9 @@
 /* ==========================================================================
-   RENAULT MEGANE 4 DİKEY MULTİMEDYA & GPS SPEEDO (OBD BAĞIMSIZ)
+   RENAULT MEGANE 4 - 4 SAYFALI DİKEY KOKPİT & MULTİMEDYA
+   Sayfa 1: Ekran Koruyucu (Standby)
+   Sayfa 2: Büyük Klasik Kokpit Saati
+   Sayfa 3: Büyük GPS Hız Göstergesi
+   Sayfa 4: Büyük Canlı Hava Durumu & Tahmin
    ========================================================================== */
 
 :root {
@@ -13,8 +17,8 @@
     /* Base Palette */
     --bg-dark-oled: #06090e;
     --bg-surface: #0e141f;
-    --bg-surface-glass: rgba(15, 23, 38, 0.82);
-    --bg-card: rgba(18, 27, 44, 0.9);
+    --bg-surface-glass: rgba(15, 23, 38, 0.85);
+    --bg-card: rgba(18, 27, 44, 0.92);
     --bg-card-border: rgba(255, 255, 255, 0.08);
 
     /* Text Colors */
@@ -73,7 +77,7 @@ body.theme-gold {
     --accent-secondary: #fbbf24;
 }
 
-/* Global Setup */
+/* Global Reset */
 * {
     margin: 0;
     padding: 0;
@@ -99,324 +103,29 @@ html, body {
     height: 100vh;
     overflow: hidden;
     background: radial-gradient(circle at 50% 15%, #141c2c 0%, var(--bg-dark-oled) 85%);
+    display: flex;
+    flex-direction: column;
 }
 
 
 /* ==========================================================================
-   1. DİKEY EKRAN KORUYUCU (PORTRAIT SCREENSAVER)
+   PERSISTENT TOP STATUS HEADER
    ========================================================================== */
-.screensaver-screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-    background: radial-gradient(ellipse at top center, #0f192b 0%, #03060a 100%);
-    cursor: pointer;
-}
-
-.screensaver-screen.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.screensaver-bg-glow {
-    position: absolute;
-    width: 550px;
-    height: 550px;
-    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
-    filter: blur(80px);
-    opacity: 0.35;
-    animation: ambientFloatVert 12s infinite alternate ease-in-out;
-    pointer-events: none;
-}
-
-@keyframes ambientFloatVert {
-    0% { transform: translateY(-50px) scale(0.9); }
-    100% { transform: translateY(50px) scale(1.15); }
-}
-
-.screensaver-content-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    z-index: 2;
-    padding: 24px 20px;
-    max-width: 500px;
-    width: 100%;
-}
-
-.screensaver-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 18px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--accent-border);
-    border-radius: 30px;
-    margin-bottom: 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    backdrop-filter: var(--glass-blur);
-}
-
-.renault-diamond-icon {
-    width: 18px;
-    height: 22px;
-    color: var(--accent-color);
-}
-
-.diamond-svg {
-    width: 100%;
-    height: 100%;
-}
-
-.badge-text {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    letter-spacing: 3.5px;
-    font-size: 1.15rem;
-    color: #f8fafc;
-    text-transform: uppercase;
-}
-
-.badge-accent {
-    color: var(--accent-color);
-    font-weight: 800;
-    text-shadow: 0 0 10px var(--accent-glow);
-}
-
-/* Ambient Clock Vertical */
-.ambient-clock-box {
-    margin-bottom: 30px;
-}
-
-.ambient-time {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(5.5rem, 16vw, 8rem);
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: 2px;
-    background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 35px var(--accent-glow));
-}
-
-.ambient-seconds-bar {
-    width: 240px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    margin: 16px auto 14px auto;
-    overflow: hidden;
-}
-
-.ambient-sec-fill {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
-    box-shadow: 0 0 10px var(--accent-color);
-    transition: width 0.3s ease;
-}
-
-.ambient-date {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
-    font-weight: 600;
-    letter-spacing: 2.5px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-}
-
-/* Ambient Weather Box */
-.ambient-weather-box {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 16px 28px;
-    background: var(--bg-surface-glass);
-    border: 1px solid var(--accent-border);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px var(--accent-subtle);
-    backdrop-filter: var(--glass-blur);
-    margin-bottom: 28px;
-    width: 100%;
-    max-width: 400px;
-    justify-content: center;
-}
-
-.ambient-weather-main {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.ambient-weather-icon {
-    font-size: 2.8rem;
-    color: var(--accent-secondary);
-    filter: drop-shadow(0 0 15px rgba(255, 180, 0, 0.5));
-}
-
-.ambient-temp-wrap {
-    display: flex;
-    align-items: flex-start;
-}
-
-.ambient-temp {
-    font-family: 'Orbitron', monospace;
-    font-size: 3.2rem;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1;
-}
-
-.ambient-unit {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-left: 2px;
-}
-
-.ambient-weather-details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    padding-left: 16px;
-    text-align: left;
-}
-
-.ambient-city {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.ambient-condition {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-}
-
-.ambient-extra-info {
-    display: flex;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.ambient-extra-info span i {
-    color: var(--accent-color);
-    margin-right: 3px;
-}
-
-/* Ambient GPS & Mode Status */
-.ambient-car-status {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.status-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #e2e8f0;
-}
-
-.status-pill.gps-pill {
-    border-color: rgba(16, 185, 129, 0.4);
-    background: rgba(16, 185, 129, 0.12);
-    color: #34d399;
-}
-
-.status-pill.mode-indicator {
-    border-color: var(--accent-border);
-    background: var(--accent-subtle);
-    color: var(--accent-color);
-    letter-spacing: 1.5px;
-}
-
-/* Wake hint */
-.wake-hint {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    animation: bounceHint 2.5s infinite ease-in-out;
-}
-
-.wake-hint i {
-    color: var(--accent-color);
-    font-size: 1.1rem;
-}
-
-@keyframes bounceHint {
-    0%, 100% { opacity: 0.5; transform: translateY(0); }
-    50% { opacity: 1; transform: translateY(-4px); }
-}
-
-
-/* ==========================================================================
-   2. AKTİF DİKEY KOKPİT & DASHBOARD
-   ========================================================================== */
-.vertical-dashboard {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    background: radial-gradient(circle at top, #111a2d 0%, var(--bg-dark-oled) 100%);
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.98);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    z-index: 10;
-    padding: 10px 14px 8px 14px;
-    overflow: hidden;
-}
-
-.vertical-dashboard.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: scale(1);
-}
-
-/* Topbar in Vertical Mode */
 .dash-topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background: var(--bg-surface-glass);
-    border: 1px solid var(--bg-card-border);
-    border-radius: var(--radius-md);
+    background: rgba(10, 14, 23, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: var(--glass-blur);
-    margin-bottom: 10px;
+    z-index: 50;
     flex-shrink: 0;
 }
 
-.topbar-left, .topbar-center, .topbar-right {
+.topbar-left {
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .car-brand {
@@ -426,14 +135,15 @@ html, body {
 }
 
 .renault-logo-small {
-    width: 18px;
-    height: 22px;
-    color: var(--accent-color);
+    width: 22px;
+    height: 26px;
+    color: #f8fafc;
 }
 
 .diamond-svg-sm {
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
 .brand-title-wrap {
@@ -443,16 +153,16 @@ html, body {
 
 .brand-name {
     font-family: 'Rajdhani', sans-serif;
+    font-size: 0.82rem;
     font-weight: 800;
-    font-size: 0.9rem;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     color: #ffffff;
     line-height: 1;
 }
 
 .model-name {
     font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--accent-color);
     letter-spacing: 1px;
@@ -460,7 +170,7 @@ html, body {
 
 .drive-mode-switcher {
     display: flex;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 2px;
@@ -470,13 +180,13 @@ html, body {
 .mode-btn {
     background: transparent;
     border: none;
-    padding: 4px 10px;
-    border-radius: 14px;
+    color: var(--text-muted);
     font-family: 'Rajdhani', sans-serif;
+    font-size: 0.72rem;
     font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: 0.5px;
-    color: var(--text-secondary);
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 16px;
     cursor: pointer;
     transition: var(--transition-smooth);
 }
@@ -487,37 +197,28 @@ html, body {
     box-shadow: 0 0 10px var(--accent-glow);
 }
 
-.dash-clock-wrap {
+.topbar-right {
     display: flex;
-    flex-direction: column;
     align-items: center;
-}
-
-.dash-time {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: 1px;
 }
 
 .quick-system-actions {
     display: flex;
-    gap: 5px;
+    gap: 6px;
 }
 
 .icon-btn {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     transition: var(--transition-smooth);
 }
 
@@ -527,43 +228,347 @@ html, body {
     border-color: var(--accent-border);
 }
 
+.icon-btn.sleep-btn-accent {
+    color: #38bdf8;
+}
+
+.icon-btn.sleep-btn-accent:hover, .icon-btn.sleep-btn-accent:active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+}
+
 
 /* ==========================================================================
-   VERTICAL SCROLLABLE BODY
+   4-PAGE CAROUSEL DECK & TRACK
    ========================================================================== */
-.vertical-scroll-container {
+.pages-deck-container {
     flex: 1;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 0;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.pages-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.38s cubic-bezier(0.2, 1, 0.3, 1);
+    will-change: transform;
+    touch-action: pan-y;
+}
+
+.page-view {
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    position: relative;
+}
+
+.page-view::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ==========================================================================
+   PAGE 1: STANDBY SCREENSAVER VIEW
+   ========================================================================== */
+.page-screensaver {
+    background: radial-gradient(ellipse at top center, #0f192b 0%, #03060a 100%);
+}
+
+.screensaver-bg-glow {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.screensaver-content-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    max-height: 520px;
+    z-index: 10;
+    padding: 6px 0;
+}
+
+.screensaver-top-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+}
+
+.screensaver-badge.user-driver-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.turkish-flag-icon {
+    width: 24px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(227, 10, 23, 0.6);
+}
+
+.flag-tr-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.badge-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ffffff;
+}
+
+.badge-accent {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Authentic Turkish Vehicle License Plate (16 ALP 569) */
+.car-license-plate {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 2.5px solid #0f172a;
+    border-radius: 6px;
+    padding: 3px 14px 3px 3px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    height: 38px;
     gap: 10px;
-    overflow-y: auto;
-    padding-right: 4px;
-    min-height: 0;
 }
 
-.vertical-scroll-container::-webkit-scrollbar {
-    width: 4px;
-}
-
-.vertical-scroll-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+.plate-tr-box {
+    background: #003399;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 8px;
     border-radius: 4px;
 }
 
-.v-card {
-    background: var(--bg-card);
-    border: 1px solid var(--bg-card-border);
-    border-radius: var(--radius-md);
-    backdrop-filter: var(--glass-blur);
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    flex-shrink: 0;
+.plate-tr-text {
+    font-family: 'Rajdhani', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    color: #ffffff;
 }
 
-.v-card::before {
+.plate-number-text {
+    font-family: 'Rajdhani', -apple-system, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 900;
+    letter-spacing: 3.5px;
+    color: #0f172a;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+/* Ambient Clock Box */
+.ambient-clock-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.ambient-time {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(4.8rem, 16vw, 6.8rem);
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 0.95;
+    letter-spacing: 2px;
+    text-shadow: 0 0 35px rgba(255, 255, 255, 0.25);
+    margin-bottom: 2px;
+}
+
+.ambient-seconds-bar {
+    width: 80%;
+    max-width: 220px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 8px 0 6px 0;
+    overflow: hidden;
+}
+
+.ambient-sec-fill {
+    height: 100%;
+    width: 45%;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    transition: width 0.3s linear;
+}
+
+.ambient-date {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+/* Ambient Weather Box */
+.ambient-weather-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 10px 18px;
+    width: 100%;
+}
+
+.ambient-weather-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ambient-weather-icon {
+    font-size: 2.2rem;
+    color: var(--accent-secondary);
+    filter: drop-shadow(0 0 10px rgba(255, 180, 0, 0.5));
+}
+
+.ambient-temp-wrap {
+    display: flex;
+    align-items: flex-start;
+}
+
+.ambient-temp {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.ambient-unit {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.ambient-weather-details {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 14px;
+    text-align: left;
+}
+
+.ambient-city {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.ambient-condition {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.ambient-extra-info {
+    display: flex;
+    gap: 10px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.ambient-car-status {
+    display: flex;
+    gap: 8px;
+}
+
+.status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid #10b981;
+    color: #34d399;
+}
+
+
+/* ==========================================================================
+   FULLSCREEN INSTRUMENT CARDS (PAGES 2, 3, 4)
+   ========================================================================== */
+.fullscreen-instrument-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--glass-blur);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+    min-height: 340px;
+}
+
+.fullscreen-instrument-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -573,171 +578,145 @@ html, body {
     background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
 }
 
-.v-card-header {
+.instrument-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    width: 100%;
+    margin-bottom: 6px;
 }
 
-.header-left {
+.i-head-left {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.5px;
     color: #ffffff;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
 }
 
-.header-left i {
+.i-head-left i {
     color: var(--accent-color);
 }
 
-.gps-badge {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid #10b981;
-    color: #34d399;
-    font-family: 'Orbitron', monospace;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-
-/* ==========================================================================
-   SECTION 1: GPS SPEEDOMETER & TRIP STATS
-   ========================================================================== */
-/* ==========================================================================
-   SECTION 1: DUAL COCKPIT INSTRUMENTS (SOL: KLASİK SAAT, SAĞ: GPS HIZ)
-   ========================================================================== */
-.dual-cockpit-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    width: 100%;
-}
-
-.classic-clock-card, .speedo-v-card {
-    padding: 10px 12px 8px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
 .chrono-badge {
-    background: linear-gradient(135deg, #334155, #1e293b);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e2e8f0;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 800;
-    padding: 2px 7px;
-    border-radius: 6px;
-    font-size: 0.7rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    background: rgba(255, 136, 0, 0.12);
+    border: 1px solid rgba(255, 136, 0, 0.35);
+    padding: 2px 8px;
+    border-radius: 10px;
     letter-spacing: 1px;
 }
 
-/* Analog Clock Container */
-.analog-clock-container {
-    position: relative;
+.gps-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10b981;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+   PAGE 2: GRAND CLASSIC CLOCK
+   ========================================================================== */
+.grand-clock-canvas-wrap {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 155px;
-    margin: -3px 0;
+    margin: 6px 0;
 }
 
 #classicClockCanvas {
     width: 100%;
-    max-width: 180px;
+    max-width: clamp(280px, 80vw, 340px);
     height: auto;
     aspect-ratio: 1 / 1;
     display: block;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.75));
 }
 
-.clock-bottom-data {
+.grand-clock-footer {
+    width: 100%;
     display: flex;
+    justify-content: center;
+}
+
+.clock-sync-stacked {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.4);
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.45);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-sm);
-    padding: 5px 8px;
-    margin-top: 4px;
+    padding: 6px 16px;
     width: 100%;
-}
-
-.clock-sync-single-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    white-space: nowrap;
+    text-align: center;
 }
 
 .clock-dig-time {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.95rem;
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+    font-size: 1.45rem;
     font-weight: 800;
     color: #ffffff;
-    letter-spacing: 0.5px;
-}
-
-.clock-dig-dot {
-    color: var(--accent-color);
-    font-size: 0.85rem;
-    opacity: 0.8;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    text-shadow: 0 0 16px rgba(255, 255, 255, 0.35);
 }
 
 .clock-dig-date {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    color: #e2e8f0;
-    letter-spacing: 0.3px;
+    color: #cbd5e1;
+    letter-spacing: 0.5px;
 }
 
 .clock-day-highlight {
-    color: #fbbf24;
+    color: var(--accent-color);
     font-weight: 800;
     text-transform: capitalize;
-    margin-left: 2px;
-    padding: 1px 5px;
-    background: rgba(251, 191, 36, 0.15);
-    border-radius: 4px;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+    margin-left: 3px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    text-shadow: 0 0 10px var(--accent-glow);
+    transition: var(--transition-smooth);
 }
 
-/* Speedometer Container Right */
-.speedometer-container {
+
+/* ==========================================================================
+   PAGE 3: GRAND SPEEDOMETER
+   ========================================================================== */
+.grand-speedo-canvas-wrap {
     position: relative;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 155px;
-    margin: -3px 0;
+    margin: 4px 0;
 }
 
 #speedoCanvas {
     width: 100%;
-    max-width: 180px;
+    max-width: clamp(280px, 80vw, 340px);
     height: auto;
     aspect-ratio: 1 / 1;
     display: block;
 }
 
-.speedo-center-data {
+.speedo-center-data.grand {
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -748,109 +727,66 @@ html, body {
 
 .speed-value {
     font-family: 'Orbitron', monospace;
-    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    font-size: clamp(3.6rem, 12vw, 4.8rem);
     font-weight: 900;
-    line-height: 1;
+    line-height: 0.95;
     color: #ffffff;
-    text-shadow: 0 0 18px var(--accent-glow);
+    text-shadow: 0 0 24px var(--accent-glow);
 }
 
 .speed-unit {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     letter-spacing: 2px;
     color: var(--accent-color);
     margin-top: 1px;
 }
 
-.speed-subtitle {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.turn-signals {
-    position: absolute;
-    top: 2px;
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-}
-
-.turn-signal {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4b5563;
-    font-size: 0.75rem;
-}
-
-.turn-signal.blinking {
-    background: rgba(16, 185, 129, 0.25);
-    border-color: #10b981;
-    color: #10b981;
-    box-shadow: 0 0 12px #10b981;
-}
-
-/* GPS Stats Grid Compact */
-.gps-stats-grid.compact {
+.grand-gps-stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    margin-top: 4px;
+    gap: 8px;
+    width: 100%;
 }
 
-.stat-item {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.grand-stat-item {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-sm);
-    padding: 4px 6px;
+    padding: 6px 10px;
     text-align: center;
 }
 
-.s-label {
+.grand-stat-item .s-label {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.76rem;
     font-weight: 600;
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 4px;
     margin-bottom: 2px;
-    white-space: nowrap;
 }
 
-.s-label i {
+.grand-stat-item .s-label i {
     color: var(--accent-color);
 }
 
-.s-val {
+.grand-stat-item .s-val {
     font-family: 'Orbitron', monospace;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: #ffffff;
 }
 
 
 /* ==========================================================================
-   SECTION 2: CANLI GPS HAVA DURUMU (ORTALI & BÜYÜK TASARIM)
+   PAGE 4: GRAND WEATHER DASHBOARD
    ========================================================================== */
-.prominent-weather-card {
-    padding: 12px 14px 10px 14px;
-}
-
 .location-picker select {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.5);
     color: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
@@ -861,35 +797,32 @@ html, body {
     cursor: pointer;
 }
 
-.weather-hero-centered {
+.weather-hero-centered.grand {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     width: 100%;
-    margin-top: 2px;
 }
 
-/* Location Pill */
-.weather-location-pill {
+.weather-location-pill.grand {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 3px 12px;
+    padding: 3px 14px;
     border-radius: 16px;
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 700;
     color: #e2e8f0;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
-.weather-location-pill i {
+.weather-location-pill.grand i {
     color: var(--accent-color);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     animation: locationPulse 2s infinite ease-in-out;
 }
 
@@ -898,23 +831,19 @@ html, body {
     50% { transform: scale(1.2); opacity: 1; }
 }
 
-/* Main Big Weather Display Row */
-.weather-main-row {
+.weather-main-row.grand {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 18px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     width: 100%;
 }
 
 .weather-large-icon-box {
-    font-size: 3.2rem;
+    font-size: 3.4rem;
     color: var(--accent-secondary);
-    filter: drop-shadow(0 0 16px rgba(255, 180, 0, 0.5));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    filter: drop-shadow(0 0 18px rgba(255, 180, 0, 0.55));
 }
 
 .weather-hero-icon {
@@ -933,7 +862,7 @@ html, body {
 
 .temp-hero-number {
     font-family: 'Orbitron', monospace;
-    font-size: clamp(2.8rem, 8vw, 3.8rem);
+    font-size: clamp(3rem, 9vw, 4.2rem);
     font-weight: 900;
     line-height: 0.95;
     color: #ffffff;
@@ -942,7 +871,7 @@ html, body {
 
 .temp-hero-unit {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: var(--accent-color);
     margin-left: 2px;
@@ -959,26 +888,25 @@ html, body {
 
 .weather-main-condition {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #ffffff;
     letter-spacing: 0.5px;
 }
 
 .weather-feels-text {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 500;
     margin-top: 2px;
 }
 
-/* 4 Meteorological Metrics Bar */
-.weather-metrics-bar {
+.weather-metrics-bar.grand {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .w-metric-item {
@@ -1006,542 +934,514 @@ html, body {
 
 .w-m-val {
     font-family: 'Orbitron', monospace;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #f1f5f9;
 }
 
-/* 4-Day Centered Forecast Grid */
-.forecast-grid-centered {
+.forecast-grid-centered.grand {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 8px;
     width: 100%;
+    margin-top: 6px;
 }
 
 .forecast-day-card {
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: var(--radius-sm);
-    padding: 6px 4px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-md);
+    padding: 8px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    gap: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     transition: var(--transition-smooth);
 }
 
 .forecast-day-card:hover {
-    background: rgba(255, 255, 255, 0.05);
     border-color: var(--accent-border);
+    background: rgba(15, 23, 42, 0.95);
+    transform: translateY(-2px);
 }
 
 .f-day-name {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 700;
+    font-size: 0.92rem;
+    color: #f1f5f9;
+    font-weight: 800;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .f-day-icon {
     color: var(--accent-secondary);
-    font-size: 1.05rem;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 12px rgba(255, 180, 0, 0.65));
+    margin: 3px 0;
 }
 
 .f-day-temps {
     display: flex;
-    gap: 4px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    width: 100%;
 }
 
 .f-max {
-    font-weight: 700;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.15rem;
+    font-weight: 900;
     color: #ffffff;
+    line-height: 1.1;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .f-min {
-    font-weight: 600;
-    color: var(--text-muted);
-}
-
-
-/* ==========================================================================
-   SECTION 3: YOUTUBE MUSIC LIVE PLAYER
-   ========================================================================== */
-.yt-brand {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-}
-
-.yt-music-card {
-    position: relative;
-    overflow: hidden;
-    transition: var(--transition-smooth);
-}
-
-.yt-music-card.playing-fire {
-    border-color: rgba(255, 68, 0, 0.45);
-    box-shadow: 0 0 25px rgba(255, 68, 0, 0.25), inset 0 0 20px rgba(255, 68, 0, 0.1);
-}
-
-.yt-fire-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    border-radius: inherit;
-    filter: blur(8px);
-    opacity: 0.85;
-    transform: scale(1.05);
-}
-
-.yt-music-card .v-card-header,
-.yt-music-card .media-player-body {
-    position: relative;
-    z-index: 2;
-}
-
-.yt-red-icon {
-    color: #ff0033 !important;
-    font-size: 1.15rem;
-    filter: drop-shadow(0 0 8px rgba(255, 0, 51, 0.6));
-}
-
-.media-source-pill.yt-music-pill {
-    font-size: 0.68rem;
-    background: rgba(255, 0, 51, 0.15);
-    border: 1px solid rgba(255, 0, 51, 0.4);
-    color: #ff4d6d;
-    padding: 2px 9px;
-    border-radius: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: var(--transition-smooth);
-}
-
-.media-source-pill.yt-music-pill:hover {
-    background: rgba(255, 0, 51, 0.3);
-    color: #ffffff;
-    box-shadow: 0 0 12px rgba(255, 0, 51, 0.5);
-}
-
-.media-player-body {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.album-art-wrap {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-}
-
-.album-art.yt-art {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, #2a0808 0%, #0c0202 100%);
-    border: 2px solid #ff0033;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ff0033;
-    font-size: 1.5rem;
-    box-shadow: 0 0 16px rgba(255, 0, 51, 0.35);
-    transition: transform 0.3s ease;
-}
-
-.album-art.yt-art.playing {
-    animation: spin 5s linear infinite;
-    box-shadow: 0 0 20px rgba(255, 0, 51, 0.6);
-}
-
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
-.media-info-controls {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.track-header-row {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-}
-
-.track-title {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
     font-weight: 700;
-    font-size: 0.95rem;
-    color: #ffffff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #94a3b8;
+    line-height: 1;
 }
 
-.track-artist {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
-.progress-bar-wrap {
+/* ==========================================================================
+   PAGE 5: GRAND CANLI PİYASALAR (ALTIN & DÖVİZ)
+   ========================================================================== */
+.grand-finance-card {
     width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
-    cursor: pointer;
-    margin-top: 6px;
-}
-
-.progress-bar {
+    max-width: 520px;
+    min-height: 420px;
     height: 100%;
-    background: linear-gradient(90deg, #ff0033, #ff4d6d);
-    box-shadow: 0 0 12px rgba(255, 0, 51, 0.8);
-    border-radius: 6px;
-}
-
-.time-stamps {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-
-.player-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 6px;
-    width: 100%;
-}
-
-.p-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.15rem;
-    cursor: pointer;
-    padding: 6px 12px;
-    transition: var(--transition-smooth);
-}
-
-.p-btn:hover, .p-btn:active {
-    color: #ffffff;
-    transform: scale(1.18);
-}
-
-.p-btn.play-main {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    box-shadow: 0 0 16px var(--accent-glow);
-}
-
-.p-btn.play-main:hover, .p-btn.play-main:active {
-    transform: scale(1.12);
-    box-shadow: 0 0 22px var(--accent-glow);
-}
-
-
-/* ==========================================================================
-   SECTION 4: KOMPAKT & BÜYÜK TEK HABER SLIDER
-   ========================================================================== */
-.compact-news-card {
-    padding: 10px 12px;
-}
-
-.news-slider-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-}
-
-.news-nav-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    transition: var(--transition-smooth);
-}
-
-.news-nav-btn:hover, .news-nav-btn:active {
-    background: var(--accent-subtle);
-    color: var(--accent-color);
-    border-color: var(--accent-border);
-    transform: scale(1.08);
-}
-
-.news-slide-content {
-    flex: 1;
+    max-height: 560px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    min-width: 0;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.news-badge-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.badge-news-cat {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    color: #ffffff;
-    text-transform: uppercase;
-}
-
-.badge-son-dakika {
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-}
-
-.badge-gundem {
-    background: #3b82f6;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
-}
-
-.badge-oto {
-    background: #10b981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-}
-
-.badge-tekno {
-    background: #a855f7;
-    box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
-}
-
-.badge-ulasim {
-    background: #f59e0b;
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
-}
-
-.news-source-time {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.single-news-headline {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: clamp(1.05rem, 3.2vw, 1.25rem);
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.3;
-    letter-spacing: 0.3px;
-    margin-bottom: 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-/* Dots Indicator */
-.news-slide-dots {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 2px;
-}
-
-.news-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: var(--transition-smooth);
-}
-
-.news-dot.active {
-    width: 18px;
-    border-radius: 4px;
-    background: var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-glow);
-}
-
-
-/* ==========================================================================
-   SECTION 5: APPS GRID DOCK
-   ========================================================================== */
-.apps-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
-}
-
-.app-icon-btn {
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    cursor: pointer;
-}
-
-.app-icon-btn:active {
-    transform: scale(0.92);
-}
-
-.app-icon-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    color: #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.app-icon-circle.nav { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-.app-icon-circle.ytmusic { background: linear-gradient(135deg, #ff0033, #b3001b); box-shadow: 0 4px 12px rgba(255, 0, 51, 0.4); }
-.app-icon-circle.radio { background: linear-gradient(135deg, #f59e0b, #d97706); }
-.app-icon-circle.phone { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-.app-icon-circle.yandex { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.app-icon-circle.youtube { background: linear-gradient(135deg, #e11d48, #be123c); }
-
-.app-icon-btn span {
-    font-size: 0.65rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-
-/* ==========================================================================
-   BOTTOM INTERACTIVE TEST SIMULATION BAR
-   ========================================================================== */
-.dash-footer-sim {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 6px 12px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px dashed rgba(255, 255, 255, 0.12);
-    border-radius: var(--radius-sm);
-    margin-top: 8px;
-    flex-shrink: 0;
+    padding: 14px 16px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
 }
 
-.sim-control-item {
+.finance-head-right {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.sim-btn {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    cursor: pointer;
+.finance-sync-badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 2px 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     gap: 4px;
+    letter-spacing: 0.5px;
 }
 
-.sim-btn.gas {
-    background: rgba(16, 185, 129, 0.2);
-    border-color: #10b981;
-    color: #34d399;
+.finance-refresh-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: var(--transition-smooth);
 }
 
-.sim-btn.brake {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
-    color: #f87171;
-}
-
-.timeout-info {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.timeout-badge {
+.finance-refresh-btn:hover, .finance-refresh-btn:active {
     background: var(--accent-subtle);
-    border: 1px solid var(--accent-border);
     color: var(--accent-color);
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    padding: 1px 5px;
-    border-radius: 4px;
+    border-color: var(--accent-border);
+    transform: rotate(180deg);
+}
+
+/* Category Filter Bar */
+.finance-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 0 8px 0;
+}
+
+.finance-filter-tab {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.82rem;
     font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition-smooth);
 }
 
-
-/* ==========================================================================
-/* Quick Sleep Button Accent */
-.icon-btn.sleep-btn-accent {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #38bdf8;
+.finance-filter-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
-.icon-btn.sleep-btn-accent:hover, .icon-btn.sleep-btn-accent:active {
+.finance-filter-tab.active {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.finance-filter-tab.gold-tab.active {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #f59e0b;
+    color: #fbbf24;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.finance-filter-tab.cur-tab.active {
     background: rgba(56, 189, 248, 0.2);
     border-color: #38bdf8;
-    color: #ffffff;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
+/* Markets Scroll Grid */
+.markets-scroll-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 2px;
+    margin: 4px 0;
+}
+
+.markets-scroll-grid::-webkit-scrollbar {
+    width: 3px;
+}
+
+.markets-scroll-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* Market Item Card */
+.market-item-card {
+    background: rgba(10, 15, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 9px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+
+.market-item-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(15, 23, 42, 0.85);
+}
+
+.market-item-card.gold-card {
+    border-left: 3px solid #f59e0b;
+}
+
+.market-item-card.currency-card {
+    border-left: 3px solid #38bdf8;
+}
+
+.market-item-card.stock-card {
+    border-left: 3px solid #a855f7;
+}
+
+.m-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.m-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-icon-pill {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.m-icon-pill.gold {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.m-icon-pill.currency {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.m-icon-pill.stock {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.m-names {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.m-code {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.m-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+.m-change-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    letter-spacing: 0.3px;
+}
+
+.m-change-badge.val-up {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.m-change-badge.val-down {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Prices Row */
+.m-prices-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: var(--radius-sm);
+    padding: 5px 12px;
+    width: 100%;
+}
+
+.price-col {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.price-col.sell-col {
+    text-align: right;
+}
+
+.price-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.price-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+}
+
+.price-val.sell-highlight {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.price-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.finance-footer-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.auto-refresh-tag {
+    color: var(--accent-secondary);
+}
+
+.news-auto-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.news-auto-label i {
+    animation: spin 6s linear infinite;
+}
+
+
 /* ==========================================================================
-   TOUCH-FRIENDLY SETTINGS MODAL (BÜYÜK VE KOLAY TIKLANABİLİR BUTONLAR)
+   PERSISTENT FOOTER (5-PAGE NAVIGATION BAR)
+   ========================================================================== */
+.app-persistent-footer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px 14px 14px;
+    background: rgba(10, 14, 23, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: var(--glass-blur);
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.page-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    width: 100%;
+}
+
+.nav-arrows-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.nav-arrow-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    transition: var(--transition-smooth);
+}
+
+.nav-arrow-btn:hover, .nav-arrow-btn:active {
+    background: var(--accent-subtle);
+    color: var(--accent-color);
+    border-color: var(--accent-border);
+}
+
+.page-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    overflow-x: auto;
+}
+
+.page-pills::-webkit-scrollbar {
+    display: none;
+}
+
+.page-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+}
+
+.page-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.page-pill.active {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent-color);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+
+
+/* ==========================================================================
+   SETTINGS MODAL DIALOG
    ========================================================================== */
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
@@ -1597,7 +1497,6 @@ html, body {
     font-size: 1.6rem;
     cursor: pointer;
     line-height: 1;
-    padding: 4px;
 }
 
 .touch-settings-body {
@@ -1632,7 +1531,6 @@ html, body {
     margin-bottom: 10px;
 }
 
-/* 3x2 Large Touch Tiles Grid */
 .timeout-tiles-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1655,11 +1553,6 @@ html, body {
 .timeout-tile:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-.timeout-tile:active {
-    transform: scale(0.96);
 }
 
 .timeout-tile.active {
@@ -1692,7 +1585,6 @@ html, body {
     color: #f1f5f9;
 }
 
-/* Sound Toggle Card */
 .touch-setting-card {
     display: flex;
     align-items: center;
@@ -1738,24 +1630,45 @@ html, body {
     color: var(--text-muted);
 }
 
-/* Large Toggle Switch */
 .toggle-switch.large-switch {
     width: 50px;
     height: 28px;
+    position: relative;
+    display: inline-block;
 }
 
-.large-switch .slider {
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #334155;
+    transition: .3s;
     border-radius: 28px;
 }
 
-.large-switch .slider:before {
+.slider:before {
+    position: absolute;
+    content: "";
     height: 20px;
     width: 20px;
     left: 4px;
     bottom: 4px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
 }
 
-.large-switch input:checked + .slider:before {
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+
+input:checked + .slider:before {
     transform: translateX(22px);
 }
 
@@ -1775,7 +1688,6 @@ html, body {
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
     cursor: pointer;
     box-shadow: 0 0 16px var(--accent-glow);
     display: flex;
@@ -1783,13 +1695,4 @@ html, body {
     justify-content: center;
     gap: 8px;
     transition: var(--transition-smooth);
-}
-
-.btn-primary.touch-btn-lg:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 22px var(--accent-glow);
-}
-
-.btn-primary.touch-btn-lg:active {
-    transform: scale(0.98);
 }

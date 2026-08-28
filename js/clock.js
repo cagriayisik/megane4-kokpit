@@ -149,20 +149,27 @@ class ClassicAnalogClock {
         ctx.fillText('CHRONOGRAPH', centerX, centerY - 28);
         ctx.font = '700 7px "Rajdhani", sans-serif';
         ctx.fillStyle = this.accentColor;
-        ctx.fillText('AUTOMATIC', centerX, centerY + 30);
+        ctx.fillText('AUTOMATIC', centerX, centerY - 16);
         ctx.restore();
 
-        // 7. Date Aperture (Small Date Window at 3 o'clock)
-        const dateX = centerX + (radius - 38);
-        const dateY = centerY;
+        // 7. Date Aperture (Symmetrical Luxury Date Window at 6 o'clock above 6)
+        const dateX = centerX;
+        const dateY = centerY + (radius * 0.40);
         ctx.save();
-        ctx.fillStyle = '#0a0f18';
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.fillRect(dateX - 10, dateY - 7, 20, 14);
-        ctx.strokeRect(dateX - 10, dateY - 7, 20, 14);
+        ctx.fillStyle = '#04070e';
+        ctx.fillRect(dateX - 16, dateY - 12, 32, 24);
+        
+        // Metallic outer border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(dateX - 16, dateY - 12, 32, 24);
+        
+        // Inner accent border
+        ctx.strokeStyle = this.accentColor;
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(dateX - 15, dateY - 11, 30, 22);
 
-        ctx.font = '700 9px "Orbitron", monospace';
+        ctx.font = '800 15px "Cinzel", "Playfair Display", "Rajdhani", serif';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

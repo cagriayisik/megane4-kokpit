@@ -7,12 +7,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0e17">
-    <title>Renault Megane IV - Dikey Akıllı Multimedya & Dashboard</title>
+    <title>Renault Megane IV - Dikey Akıllı Kokpit</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:wght@600;700;800&family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -26,431 +26,357 @@
     <!-- APP CONTAINER -->
     <div id="app" class="app-wrapper">
 
-        <!-- ============================================== -->
-        <!-- 1. DİKEY EKRAN KORUYUCU / STANDBY AMBİYANS     -->
-        <!-- ============================================== -->
-        <section id="screensaver" class="screensaver-screen active">
-            <div class="screensaver-bg-glow"></div>
-            <div class="ambient-particles" id="ambientParticles"></div>
-
-            <div class="screensaver-content-vertical">
-                <!-- Personal Driver Badge -->
-                <div class="screensaver-badge user-driver-badge">
-                    <div class="renault-diamond-icon">
-                        <svg viewBox="0 0 100 120" class="diamond-svg">
-                            <polygon points="50,5 95,60 50,115 5,60" fill="none" stroke="currentColor" stroke-width="6"/>
-                            <polygon points="50,25 78,60 50,95 22,60" fill="none" stroke="currentColor" stroke-width="4"/>
+        <!-- TOP STATUS HEADER (HER SAYFADA SABİT KOKPİT ÇUBUĞU) -->
+        <header class="dash-topbar">
+            <div class="topbar-left">
+                <div class="car-brand">
+                    <div class="renault-logo-small">
+                        <svg viewBox="0 0 100 120" class="diamond-svg-sm">
+                            <polygon points="50,5 95,60 50,115 5,60" fill="none" stroke="currentColor" stroke-width="7"/>
+                            <polygon points="50,28 75,60 50,92 25,60" fill="none" stroke="currentColor" stroke-width="5"/>
                         </svg>
                     </div>
-                    <span class="badge-text">ÇAĞRI <span class="badge-accent">AYIŞIK</span></span>
-                </div>
-
-                <!-- Big Modern Clock -->
-                <div class="ambient-clock-box">
-                    <div class="ambient-time" id="ambientTime">14:35</div>
-                    <div class="ambient-seconds-bar">
-                        <div class="ambient-sec-fill" id="ambientSecFill"></div>
-                    </div>
-                    <div class="ambient-date" id="ambientDate">28 Ağustos 2026, Cuma</div>
-                </div>
-
-                <!-- Ambient Weather Widget (Vertical Card) -->
-                <div class="ambient-weather-box" id="ambientWeatherBox">
-                    <div class="ambient-weather-main">
-                        <div class="ambient-weather-icon" id="ambientWeatherIcon">
-                            <i class="fa-solid fa-cloud-sun"></i>
-                        </div>
-                        <div class="ambient-temp-wrap">
-                            <span class="ambient-temp" id="ambientTemp">26</span>
-                            <span class="ambient-unit">°C</span>
-                        </div>
-                    </div>
-                    <div class="ambient-weather-details">
-                        <div class="ambient-city" id="ambientCity">İstanbul</div>
-                        <div class="ambient-condition" id="ambientCondition">Parçalı Bulutlu</div>
-                        <div class="ambient-extra-info">
-                            <span><i class="fa-solid fa-droplet"></i> <span id="ambientHumidity">%48</span></span>
-                            <span><i class="fa-solid fa-wind"></i> <span id="ambientWind">18 km/s</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ambient GPS Status -->
-                <div class="ambient-car-status">
-                    <div class="status-pill gps-pill">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                        <span id="ambientGpsStatus">GPS Aktif</span>
+                    <div class="brand-title-wrap">
+                        <span class="brand-name">RENAULT</span>
+                        <span class="model-name">MEGANE IV</span>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <div class="topbar-center">
+                <div class="drive-mode-switcher">
+                    <button class="mode-btn active" data-mode="sport">SPORT</button>
+                    <button class="mode-btn" data-mode="comfort">COMFORT</button>
+                    <button class="mode-btn" data-mode="eco">ECO</button>
+                    <button class="mode-btn" data-mode="mysense">MYSENSE</button>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+            </div>
+        </header>
 
 
-        <!-- ============================================== -->
-        <!-- 2. AKTİF DİKEY KOKPİT & DASHBOARD              -->
-        <!-- ============================================== -->
-        <main id="dashboard" class="dashboard-screen vertical-dashboard">
-            
-            <!-- TOP STATUS HEADER -->
-            <header class="dash-topbar">
-                <div class="topbar-left">
-                    <div class="car-brand">
-                        <div class="renault-logo-small">
-                            <svg viewBox="0 0 100 120" class="diamond-svg-sm">
-                                <polygon points="50,5 95,60 50,115 5,60" fill="none" stroke="currentColor" stroke-width="7"/>
-                                <polygon points="50,28 75,60 50,92 25,60" fill="none" stroke="currentColor" stroke-width="5"/>
-                            </svg>
+        <!-- 5-PAGE CAROUSEL VIEWPORT -->
+        <main class="pages-deck-container" id="pagesDeckContainer">
+            <div class="pages-track" id="pagesTrack">
+
+                <!-- ============================================== -->
+                <!-- SAYFA 1: EKRAN KORUYUCU (STANDBY AMBİYANS)     -->
+                <!-- ============================================== -->
+                <section class="page-view page-screensaver active" id="page1" data-index="0">
+                    <div class="screensaver-bg-glow"></div>
+                    <div class="ambient-particles" id="ambientParticles"></div>
+
+                    <div class="screensaver-content-vertical">
+                        <!-- Top Header: Driver Badge & License Plate -->
+                        <div class="screensaver-top-header">
+                            <div class="screensaver-badge user-driver-badge">
+                                <div class="turkish-flag-icon">
+                                    <svg viewBox="0 0 1200 800" class="flag-tr-svg">
+                                        <rect width="1200" height="800" fill="#E30A17" rx="80"/>
+                                        <circle cx="420" cy="400" r="200" fill="#FFFFFF"/>
+                                        <circle cx="470" cy="400" r="160" fill="#E30A17"/>
+                                        <polygon points="650,320 673,380 735,380 685,418 704,478 650,440 596,478 615,418 565,380 627,380" fill="#FFFFFF"/>
+                                    </svg>
+                                </div>
+                                <span class="badge-text">ÇAĞRI <span class="badge-accent">AYIŞIK</span></span>
+                            </div>
+
+                            <!-- 16 ALP 569 Turkish Vehicle License Plate -->
+                            <div class="car-license-plate">
+                                <div class="plate-tr-box">
+                                    <span class="plate-tr-text">TR</span>
+                                </div>
+                                <div class="plate-number-text">16 ALP 569</div>
+                            </div>
                         </div>
-                        <div class="brand-title-wrap">
-                            <span class="brand-name">RENAULT</span>
-                            <span class="model-name">MEGANE IV</span>
+
+                        <!-- Big Modern Clock -->
+                        <div class="ambient-clock-box">
+                            <div class="ambient-time" id="ambientTime">14:35</div>
+                            <div class="ambient-seconds-bar">
+                                <div class="ambient-sec-fill" id="ambientSecFill"></div>
+                            </div>
+                            <div class="ambient-date" id="ambientDate">28 Ağustos 2026, Cuma</div>
+                        </div>
+
+                        <!-- Ambient Weather Widget (Vertical Card) -->
+                        <div class="ambient-weather-box" id="ambientWeatherBox">
+                            <div class="ambient-weather-main">
+                                <div class="ambient-weather-icon" id="ambientWeatherIcon">
+                                    <i class="fa-solid fa-cloud-sun"></i>
+                                </div>
+                                <div class="ambient-temp-wrap">
+                                    <span class="ambient-temp" id="ambientTemp">26</span>
+                                    <span class="ambient-unit">°C</span>
+                                </div>
+                            </div>
+                            <div class="ambient-weather-details">
+                                <div class="ambient-city" id="ambientCity">İstanbul</div>
+                                <div class="ambient-condition" id="ambientCondition">Parçalı Bulutlu</div>
+                                <div class="ambient-extra-info">
+                                    <span><i class="fa-solid fa-droplet"></i> <span id="ambientHumidity">%48</span></span>
+                                    <span><i class="fa-solid fa-wind"></i> <span id="ambientWind">18 km/s</span></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="topbar-center">
-                    <div class="drive-mode-switcher">
-                        <button class="mode-btn active" data-mode="sport">SPORT</button>
-                        <button class="mode-btn" data-mode="comfort">COMFORT</button>
-                        <button class="mode-btn" data-mode="eco">ECO</button>
-                        <button class="mode-btn" data-mode="mysense">MYSENSE</button>
-                    </div>
-                </div>
 
-                <div class="topbar-right">
-                    <div class="quick-system-actions">
-                        <button class="icon-btn sleep-btn-accent" id="btnSleepNow" title="Hemen Ekran Koruyucuya Geç">
-                            <i class="fa-solid fa-moon"></i>
-                        </button>
-                        <button class="icon-btn" id="btnSettings" title="Ayarlar">
-                            <i class="fa-solid fa-gear"></i>
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <!-- VERTICAL SCROLLABLE DASHBOARD BODY -->
-            <div class="vertical-scroll-container">
-                
-                <!-- SECTION 1: DUAL COCKPIT INSTRUMENTS (SOL: KLASİK ANALOG SAAT, SAĞ: GPS HIZ GÖSTERGESİ) -->
-                <div class="dual-cockpit-row">
-                    
-                    <!-- SOL SÜTUN: KLASİK ARABA ANALOG SAATİ -->
-                    <section class="v-card classic-clock-card">
-                        <div class="v-card-header">
-                            <div class="header-left">
+                <!-- ============================================== -->
+                <!-- SAYFA 2: BÜYÜK KLASİK KOKPİT SAATİ             -->
+                <!-- ============================================== -->
+                <section class="page-view page-classic-clock" id="page2" data-index="1">
+                    <div class="fullscreen-instrument-card">
+                        <div class="instrument-header">
+                            <div class="i-head-left">
                                 <i class="fa-regular fa-clock"></i>
                                 <span>KLASİK SAAT</span>
                             </div>
-                            <div class="chrono-badge">CHRONO</div>
+                            <div class="chrono-badge">CHRONO • VINTAGE</div>
                         </div>
 
-                        <div class="analog-clock-container">
-                            <canvas id="classicClockCanvas" width="260" height="260"></canvas>
+                        <div class="grand-clock-canvas-wrap">
+                            <canvas id="classicClockCanvas" width="340" height="340"></canvas>
                         </div>
 
-                        <div class="clock-bottom-data">
-                            <div class="clock-sync-single-line">
-                                <span class="clock-dig-time" id="dashDigitalTime">14:35:42</span>
-                                <span class="clock-dig-dot">•</span>
-                                <span class="clock-dig-date" id="dashDigitalDate">28 Ağu <span class="clock-day-highlight">Cuma</span></span>
+                        <div class="grand-clock-footer">
+                            <div class="clock-sync-stacked">
+                                <div class="clock-dig-time" id="dashDigitalTime">14:35:42</div>
+                                <div class="clock-dig-date" id="dashDigitalDate">28 Ağustos 2026, <span class="clock-day-highlight">Cuma</span></div>
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </section>
 
-                    <!-- SAĞ SÜTUN: HIZ GÖSTERGESİ -->
-                    <section class="v-card speedo-v-card">
-                        <div class="v-card-header">
-                            <div class="header-left">
+
+                <!-- ============================================== -->
+                <!-- SAYFA 3: BÜYÜK GPS HIZ GÖSTERGESİ              -->
+                <!-- ============================================== -->
+                <section class="page-view page-speedometer" id="page3" data-index="2">
+                    <div class="fullscreen-instrument-card">
+                        <div class="instrument-header">
+                            <div class="i-head-left">
                                 <i class="fa-solid fa-gauge-high"></i>
                                 <span>HIZ GÖSTERGESİ</span>
                             </div>
+                            <div class="gps-badge"><i class="fa-solid fa-satellite-dish"></i> CANLI GPS</div>
                         </div>
 
-                        <div class="speedometer-container">
-                            <canvas id="speedoCanvas" width="260" height="260"></canvas>
+                        <div class="grand-speedo-canvas-wrap">
+                            <canvas id="speedoCanvas" width="340" height="340"></canvas>
                             
-                            <div class="speedo-center-data">
+                            <div class="speedo-center-data grand">
                                 <div class="speed-value" id="speedDisplay">0</div>
                                 <div class="speed-unit">KM/H</div>
                             </div>
                         </div>
 
-                        <!-- GPS Trip Stats (OBD Bağımsız) -->
-                        <div class="gps-stats-grid compact">
-                            <div class="stat-item">
-                                <div class="s-label"><i class="fa-solid fa-route"></i> Mesafe</div>
+                        <!-- GPS Trip Stats (4 Metrik) -->
+                        <div class="grand-gps-stats-grid">
+                            <div class="grand-stat-item">
+                                <div class="s-label"><i class="fa-solid fa-route"></i> Kat Edilen Mesafe</div>
                                 <div class="s-val"><span id="tripDist">0.0</span> km</div>
                             </div>
-                            <div class="stat-item">
-                                <div class="s-label"><i class="fa-solid fa-compass"></i> Yön</div>
+                            <div class="grand-stat-item">
+                                <div class="s-label"><i class="fa-solid fa-bolt"></i> En Yüksek Hız</div>
+                                <div class="s-val"><span id="maxSpeedVal">0</span> km/s</div>
+                            </div>
+                            <div class="grand-stat-item">
+                                <div class="s-label"><i class="fa-solid fa-chart-line"></i> Ortalama Hız</div>
+                                <div class="s-val"><span id="avgSpeedVal">0</span> km/s</div>
+                            </div>
+                            <div class="grand-stat-item">
+                                <div class="s-label"><i class="fa-solid fa-compass"></i> Pusula Yönü</div>
                                 <div class="s-val" id="headingVal">KUZEY</div>
                             </div>
                         </div>
-                    </section>
-
-                </div>
-
-                <!-- SECTION 2: CANLI GPS HAVA DURUMU & 4 GÜNLÜK TAHMİN (ORTALI VE BÜYÜK TASARIM) -->
-                <section class="v-card weather-v-card prominent-weather-card">
-                    <div class="v-card-header">
-                        <div class="header-left">
-                            <i class="fa-solid fa-cloud-sun-rain"></i>
-                            <span>CANLI HAVA DURUMU & TAHMİN</span>
-                        </div>
-                        <div class="location-picker">
-                            <select id="citySelect">
-                                <option value="gps" selected>📍 Canlı Konum (GPS)</option>
-                                <option value="istanbul">İstanbul</option>
-                                <option value="ankara">Ankara</option>
-                                <option value="izmir">İzmir</option>
-                                <option value="bursa">Bursa</option>
-                                <option value="antalya">Antalya</option>
-                                <option value="adana">Adana</option>
-                                <option value="trabzon">Trabzon</option>
-                                <option value="kocaeli">Kocaeli</option>
-                                <option value="konya">Konya</option>
-                                <option value="gaziantep">Gaziantep</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Centered Large Weather Hero Section -->
-                    <div class="weather-hero-centered">
-                        
-                        <!-- Top Location Badge -->
-                        <div class="weather-location-pill">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <span id="dashLocationBadge">Canlı Konum Belirleniyor...</span>
-                        </div>
-
-                        <!-- Main Big Weather Display -->
-                        <div class="weather-main-row">
-                            <div class="weather-large-icon-box" id="dashDetailedIcon">
-                                <i class="fa-solid fa-sun weather-hero-icon"></i>
-                            </div>
-
-                            <div class="weather-large-temp-box">
-                                <span class="temp-hero-number" id="dashDetailedTemp">26</span>
-                                <span class="temp-hero-unit">°C</span>
-                            </div>
-
-                            <div class="weather-hero-desc">
-                                <div class="weather-main-condition" id="dashDetailedCondition">Açık & Güneşli</div>
-                                <div class="weather-feels-text">Hissedilen: <span id="dashFeelsLike">27°C</span></div>
-                            </div>
-                        </div>
-
-                        <!-- 4 Meteorological Metrics Bar -->
-                        <div class="weather-metrics-bar">
-                            <div class="w-metric-item">
-                                <i class="fa-solid fa-droplet"></i>
-                                <span class="w-m-label">Nem</span>
-                                <span class="w-m-val" id="dashDetailedHumidity">%48</span>
-                            </div>
-                            <div class="w-metric-item">
-                                <i class="fa-solid fa-wind"></i>
-                                <span class="w-m-label">Rüzgar</span>
-                                <span class="w-m-val" id="dashDetailedWind">16 km/s</span>
-                            </div>
-                            <div class="w-metric-item">
-                                <i class="fa-solid fa-cloud-showers-heavy"></i>
-                                <span class="w-m-label">Yağış</span>
-                                <span class="w-m-val" id="dashRainProb">%0</span>
-                            </div>
-                            <div class="w-metric-item">
-                                <i class="fa-solid fa-satellite-dish"></i>
-                                <span class="w-m-label">İstasyon</span>
-                                <span class="w-m-val">GPS Canlı</span>
-                            </div>
-                        </div>
-
-                        <!-- 4-Day Centered Forecast Grid -->
-                        <div class="forecast-grid-centered" id="forecastRow">
-                            <div class="forecast-day-card">
-                                <span class="f-day-name">Cmt</span>
-                                <i class="fa-solid fa-sun f-day-icon"></i>
-                                <div class="f-day-temps">
-                                    <span class="f-max">28°</span>
-                                    <span class="f-min">18°</span>
-                                </div>
-                            </div>
-                            <div class="forecast-day-card">
-                                <span class="f-day-name">Paz</span>
-                                <i class="fa-solid fa-cloud-sun f-day-icon"></i>
-                                <div class="f-day-temps">
-                                    <span class="f-max">26°</span>
-                                    <span class="f-min">17°</span>
-                                </div>
-                            </div>
-                            <div class="forecast-day-card">
-                                <span class="f-day-name">Pzt</span>
-                                <i class="fa-solid fa-cloud-rain f-day-icon"></i>
-                                <div class="f-day-temps">
-                                    <span class="f-max">22°</span>
-                                    <span class="f-min">15°</span>
-                                </div>
-                            </div>
-                            <div class="forecast-day-card">
-                                <span class="f-day-name">Sal</span>
-                                <i class="fa-solid fa-cloud-bolt f-day-icon"></i>
-                                <div class="f-day-temps">
-                                    <span class="f-max">20°</span>
-                                    <span class="f-min">14°</span>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </section>
 
-                <!-- SECTION 3: YOUTUBE MUSIC LIVE INTEGRATION (ATEŞ YANMA EFEKTLİ) -->
-                <section class="v-card media-v-card yt-music-card" id="ytMusicCard">
-                    <!-- Background Fire & Flame Canvas -->
-                    <canvas id="ytFireCanvas" class="yt-fire-canvas"></canvas>
 
-                    <div class="v-card-header">
-                        <div class="header-left yt-brand">
-                            <i class="fa-brands fa-youtube yt-red-icon"></i>
-                            <span>YOUTUBE MUSIC</span>
-                        </div>
-                        <a href="https://music.youtube.com" target="_blank" class="media-source-pill yt-music-pill" id="btnLaunchYtMusic" title="YouTube Music Uygulamasını Aç">
-                            <i class="fa-brands fa-youtube"></i> YT Music Bağlı
-                        </a>
-                    </div>
-
-                    <div class="media-player-body">
-                        <div class="album-art-wrap">
-                            <div class="album-art yt-art" id="albumArt">
-                                <i class="fa-solid fa-music yt-disc-icon"></i>
+                <!-- ============================================== -->
+                <!-- SAYFA 4: BÜYÜK CANLI HAVA DURUMU & TAHMİN      -->
+                <!-- ============================================== -->
+                <section class="page-view page-weather" id="page4" data-index="3">
+                    <div class="fullscreen-instrument-card">
+                        <div class="instrument-header">
+                            <div class="i-head-left">
+                                <i class="fa-solid fa-cloud-sun-rain"></i>
+                                <span>CANLI HAVA DURUMU & TAHMİN</span>
+                            </div>
+                            <div class="location-picker">
+                                <select id="citySelect">
+                                    <option value="gps" selected>📍 Canlı Konum (GPS)</option>
+                                    <option value="istanbul">İstanbul</option>
+                                    <option value="ankara">Ankara</option>
+                                    <option value="izmir">İzmir</option>
+                                    <option value="bursa">Bursa</option>
+                                    <option value="antalya">Antalya</option>
+                                    <option value="adana">Adana</option>
+                                    <option value="trabzon">Trabzon</option>
+                                    <option value="kocaeli">Kocaeli</option>
+                                    <option value="konya">Konya</option>
+                                    <option value="gaziantep">Gaziantep</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="media-info-controls">
-                            <div class="track-header-row">
-                                <div class="track-title" id="trackTitle">YouTube Music - Şarkı Yükleniyor...</div>
-                                <div class="track-artist" id="trackArtist">YouTube Music Akışı</div>
-                            </div>
+
+                        <!-- Centered Large Weather Hero Section -->
+                        <div class="weather-hero-centered grand">
                             
-                            <div class="progress-bar-wrap">
-                                <div class="progress-bar" id="mediaProgressBar" style="width: 42%;"></div>
-                            </div>
-                            <div class="time-stamps">
-                                <span id="currentTime">1:45</span>
-                                <span id="totalTime">3:50</span>
+                            <!-- Location Badge -->
+                            <div class="weather-location-pill grand">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span id="dashLocationBadge">Canlı Konum Belirleniyor...</span>
                             </div>
 
-                            <div class="player-buttons">
-                                <button class="p-btn" id="btnPrevTrack"><i class="fa-solid fa-backward-step"></i></button>
-                                <button class="p-btn play-main" id="btnPlayPause"><i class="fa-solid fa-play" id="playIcon"></i></button>
-                                <button class="p-btn" id="btnNextTrack"><i class="fa-solid fa-forward-step"></i></button>
+                            <!-- Main Big Weather Display -->
+                            <div class="weather-main-row grand">
+                                <div class="weather-large-icon-box" id="dashDetailedIcon">
+                                    <i class="fa-solid fa-sun weather-hero-icon"></i>
+                                </div>
+
+                                <div class="weather-large-temp-box">
+                                    <span class="temp-hero-number" id="dashDetailedTemp">26</span>
+                                    <span class="temp-hero-unit">°C</span>
+                                </div>
+
+                                <div class="weather-hero-desc">
+                                    <div class="weather-main-condition" id="dashDetailedCondition">Açık & Güneşli</div>
+                                    <div class="weather-feels-text">Hissedilen: <span id="dashFeelsLike">27°C</span></div>
+                                </div>
                             </div>
+
+                            <!-- 4 Meteorological Metrics Bar -->
+                            <div class="weather-metrics-bar grand">
+                                <div class="w-metric-item">
+                                    <i class="fa-solid fa-droplet"></i>
+                                    <span class="w-m-label">Nem</span>
+                                    <span class="w-m-val" id="dashDetailedHumidity">%48</span>
+                                </div>
+                                <div class="w-metric-item">
+                                    <i class="fa-solid fa-wind"></i>
+                                    <span class="w-m-label">Rüzgar</span>
+                                    <span class="w-m-val" id="dashDetailedWind">16 km/s</span>
+                                </div>
+                                <div class="w-metric-item">
+                                    <i class="fa-solid fa-cloud-showers-heavy"></i>
+                                    <span class="w-m-label">Yağış</span>
+                                    <span class="w-m-val" id="dashRainProb">%0</span>
+                                </div>
+                                <div class="w-metric-item">
+                                    <i class="fa-solid fa-satellite-dish"></i>
+                                    <span class="w-m-label">İstasyon</span>
+                                    <span class="w-m-val">GPS Canlı</span>
+                                </div>
+                            </div>
+
+                            <!-- 4-Day Centered Forecast Grid -->
+                            <div class="forecast-grid-centered grand" id="forecastRow">
+                                <div class="forecast-day-card">
+                                    <span class="f-day-name">Cmt</span>
+                                    <i class="fa-solid fa-sun f-day-icon"></i>
+                                    <div class="f-day-temps">
+                                        <span class="f-max">28°</span>
+                                        <span class="f-min">18°</span>
+                                    </div>
+                                </div>
+                                <div class="forecast-day-card">
+                                    <span class="f-day-name">Paz</span>
+                                    <i class="fa-solid fa-cloud-sun f-day-icon"></i>
+                                    <div class="f-day-temps">
+                                        <span class="f-max">26°</span>
+                                        <span class="f-min">17°</span>
+                                    </div>
+                                </div>
+                                <div class="forecast-day-card">
+                                    <span class="f-day-name">Pzt</span>
+                                    <i class="fa-solid fa-cloud-rain f-day-icon"></i>
+                                    <div class="f-day-temps">
+                                        <span class="f-max">22°</span>
+                                        <span class="f-min">15°</span>
+                                    </div>
+                                </div>
+                                <div class="forecast-day-card">
+                                    <span class="f-day-name">Sal</span>
+                                    <i class="fa-solid fa-cloud-bolt f-day-icon"></i>
+                                    <div class="f-day-temps">
+                                        <span class="f-max">20°</span>
+                                        <span class="f-min">14°</span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </section>
 
-                <!-- SECTION 4: GÜNCEL HABERLER (KOMPAKT & BÜYÜK TEK HABER SLIDER) -->
-                <section class="v-card compact-news-card">
-                    <div class="news-slider-wrap">
-                        <button class="news-nav-btn prev" id="btnPrevNews" title="Önceki Haber">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
+
+                <!-- ============================================== -->
+                <!-- SAYFA 5: CANLI ALTIN & DÖVİZ PİYASALARI           -->
+                <!-- ============================================== -->
+                <section class="page-view page-finance" id="page5" data-index="4">
+                    <div class="fullscreen-instrument-card grand-finance-card">
                         
-                        <div class="news-slide-content" id="newsSlideContent">
-                            <div class="news-badge-meta">
-                                <span class="badge-news-cat badge-son-dakika" id="newsBadgeCat">SON DAKİKA</span>
-                                <span class="news-source-time" id="newsTime"><i class="fa-regular fa-clock"></i> 5 dk önce</span>
+                        <!-- Portal Header -->
+                        <div class="instrument-header">
+                            <div class="i-head-left">
+                                <i class="fa-solid fa-coins"></i>
+                                <span>CANLI PİYASALAR (ALTIN & DÖVİZ)</span>
                             </div>
-                            <div class="single-news-headline" id="singleNewsTitle">
-                                Renault Megane ve E-Tech Modellerine Yeni Nesil Otonom Sürüş Yazılımı Yayınlandı
+                            <div class="finance-head-right">
+                                <span class="finance-sync-badge" id="financeSyncLabel">
+                                    <i class="fa-solid fa-satellite-dish"></i> Canlı
+                                </span>
+                                <button class="finance-refresh-btn" id="btnRefreshFinance" title="Fiyatları Yenile">
+                                    <i class="fa-solid fa-rotate-right"></i>
+                                </button>
                             </div>
-                            <div class="news-slide-dots" id="newsDots"></div>
                         </div>
 
-                        <button class="news-nav-btn next" id="btnNextNews" title="Sonraki Haber">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                        <!-- Finance Category Filter Tabs -->
+                        <div class="finance-filter-bar">
+                            <button class="finance-filter-tab active" data-filter="all">Tümü</button>
+                            <button class="finance-filter-tab gold-tab" data-filter="gold"><i class="fa-solid fa-gem"></i> Altın Fiyatları</button>
+                            <button class="finance-filter-tab cur-tab" data-filter="currency"><i class="fa-solid fa-dollar-sign"></i> Döviz Kurları</button>
+                        </div>
+
+                        <!-- Live Markets Grid (Scrollable / High Visibility) -->
+                        <div class="markets-scroll-grid" id="marketGrid">
+                            <!-- Populated dynamically by FinanceService -->
+                        </div>
+
+                        <!-- Market Footer Info Bar -->
+                        <div class="finance-footer-info">
+                            <span><i class="fa-solid fa-shield-halved"></i> Serbest Piyasa & TCMB Referans</span>
+                            <span class="auto-refresh-tag"><i class="fa-solid fa-clock-rotate-left"></i> 30s Otomatik</span>
+                        </div>
                     </div>
                 </section>
 
             </div>
-
         </main>
 
 
-        <!-- ============================================== -->
-        <!-- 3. MODAL: AYARLAR (BÜYÜK DOKUNMATİK BUTONLAR)  -->
-        <!-- ============================================== -->
-        <div id="settingsModal" class="modal-backdrop">
-            <div class="modal-container touch-friendly-modal">
-                <div class="modal-header">
-                    <h3><i class="fa-solid fa-sliders"></i> Tablet Ekran Ayarları</h3>
-                    <button class="modal-close-btn" id="btnCloseSettings">&times;</button>
+        <!-- PERSISTENT FOOTER: 5-PAGE NAVIGATION BAR -->
+        <footer class="app-persistent-footer">
+            <div class="page-nav-bar">
+                <div class="nav-arrows-left">
+                    <button class="nav-arrow-btn" id="btnPrevPage" title="Önceki Sayfa"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="nav-arrow-btn" id="btnNextPage" title="Sonraki Sayfa"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
-
-                <div class="modal-body touch-settings-body">
-                    
-                    <!-- Inactivity Timeout Section -->
-                    <div class="touch-setting-group">
-                        <div class="touch-group-title">
-                            <i class="fa-regular fa-clock"></i>
-                            <span>Ekran Koruyucuya Geçiş Süresi</span>
-                        </div>
-                        <p class="touch-group-desc">Dokunulmadığında saat ve hava durumu ekranına geçiş süresini seçin:</p>
-                        
-                        <div class="timeout-tiles-grid" id="timeoutTilesGrid">
-                            <button class="timeout-tile" data-val="5000">
-                                <span class="tile-val">5 SN</span>
-                                <span class="tile-label">Hızlı Test</span>
-                            </button>
-                            <button class="timeout-tile active" data-val="15000">
-                                <span class="tile-val">15 SN</span>
-                                <span class="tile-label">Önerilen</span>
-                            </button>
-                            <button class="timeout-tile" data-val="30000">
-                                <span class="tile-val">30 SN</span>
-                                <span class="tile-label">Standart</span>
-                            </button>
-                            <button class="timeout-tile" data-val="60000">
-                                <span class="tile-val">1 DK</span>
-                                <span class="tile-label">Geniş</span>
-                            </button>
-                            <button class="timeout-tile" data-val="180000">
-                                <span class="tile-val">3 DK</span>
-                                <span class="tile-label">Uzun</span>
-                            </button>
-                            <button class="timeout-tile" data-val="0">
-                                <span class="tile-val"><i class="fa-solid fa-infinity"></i></span>
-                                <span class="tile-label">Sürekli Açık</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Sound Feedback Card -->
-                    <div class="touch-setting-card">
-                        <div class="touch-card-info">
-                            <div class="card-icon-wrap">
-                                <i class="fa-solid fa-volume-high"></i>
-                            </div>
-                            <div class="card-text-wrap">
-                                <span class="card-title">Dokunma Sesleri</span>
-                                <span class="card-desc">Tuş tıklama ve uyarı sesleri</span>
-                            </div>
-                        </div>
-                        <label class="toggle-switch large-switch">
-                            <input type="checkbox" id="soundToggle" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-
-                </div>
-
-                <div class="modal-footer touch-footer">
-                    <button class="btn-primary touch-btn-lg" id="btnSaveSettings">
-                        <i class="fa-solid fa-check"></i> Kaydet & Kapat
-                    </button>
+                <div class="page-pills" id="pagePills">
+                    <button class="page-pill active" data-page="0"><i class="fa-solid fa-house"></i> <span>1. Ana Ekran</span></button>
+                    <button class="page-pill" data-page="1"><i class="fa-regular fa-clock"></i> <span>2. Saat</span></button>
+                    <button class="page-pill" data-page="2"><i class="fa-solid fa-gauge-high"></i> <span>3. Hız</span></button>
+                    <button class="page-pill" data-page="3"><i class="fa-solid fa-cloud-sun"></i> <span>4. Hava</span></button>
+                    <button class="page-pill" data-page="4"><i class="fa-solid fa-coins"></i> <span>5. Piyasalar</span></button>
                 </div>
             </div>
-        </div>
+        </footer>
 
     </div>
 
@@ -459,8 +385,7 @@
     <script src="js/clock.js"></script>
     <script src="js/gauge.js"></script>
     <script src="js/weather.js"></script>
-    <script src="js/news.js"></script>
-    <script src="js/media.js"></script>
+    <script src="js/finance.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
