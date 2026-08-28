@@ -1,0 +1,13 @@
+{
+  "appId": "com.cagriayisik.meganekokpit",
+  "appName": "Megane Kokpit",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#030712"
+  },
+  "server": {
+    "cleartext": true
+  }
+}
